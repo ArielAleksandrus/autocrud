@@ -1,0 +1,13 @@
+<div class="row">
+	<label ng-if="e.array != true" class="autocrud-common-label">{{e.label}}</label>
+	<div ng-repeat="c in e.composition" class="col-xs-{{c.size}}" ng-class="e.array != true ? 'autocrud-composition-element' : ''">
+		<label ng-if="e.array != true || $parent.$parent.$index == 0">{{c.label}}:</label>
+		<custom-input></custom-input>
+	</div>
+	
+	<div ng-if="e.array == true" class="col-xs-1" ng-class="e.chars.type == 'file' ? 'autocrud-file-array-remove' : ''">
+		<button class="btn btn-md btn-danger" ng-class="!!e.composition && $index == 0 ? 'autocrud-array-remove' : ''" ng-click="fCtrl.removeArrayElement(e, a, $index)" ng-if="e.arrayEdit != false">
+			<i class="glyphicon glyphicon-minus"></i>
+		</button>
+	</div>
+</div>

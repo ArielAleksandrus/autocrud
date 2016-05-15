@@ -1,0 +1,130 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="autocrud/dependencies/bootstrap-dialog/bootstrap-dialog.min.css"/>
+		<link rel="stylesheet" href="autocrud/dependencies/bootstrap/bootstrap.min.css"/>
+
+		<script src="autocrud/dependencies/jquery/jquery.min.js"></script>
+		<script src="autocrud/dependencies/angular/angular.min.js"></script>
+		<script src="autocrud/dependencies/bootstrap/bootstrap.min.js"></script>
+		<script src="autocrud/dependencies/pagination/dirPagination.js"></script>
+		<script src="autocrud/dependencies/bootstrap-dialog/bootstrap-dialog.min.js"></script>
+		<script src="autocrud/dependencies/angular-ui/ui-bootstrap-tpls-0.14.0.js"></script>
+		<script src="autocrud/dependencies/angular-animate/angular-animate.js"></script>
+		<script src="autocrud/utils.js"></script>
+		<script src="autocrud/auto-crud.js"></script>
+		<script src="autocrud/datetimepicker.js"></script>
+		<script src="autocrud/directives.js"></script>
+		<script src="autocrud/fileupload.js"></script>
+		<script src="autocrud/formcontroller.js"></script>
+		<script src="autocrud/inputshandler.js"></script>
+		<script src="autocrud/mount-html.js"></script>
+	</head>
+
+	<body ng-app="page">
+		<div ng-controller="CrudableController as crudCtrl">
+			<crudable attrs="crudCtrl.attrs" data="crudCtrl.data" paginate-options="crudCtrl.paginateOptions"
+			 object-properties="crudCtrl.objectProperties" plugin-path="autocrud">
+			</crudable>
+		</div>
+	</body>
+</html>
+<script>
+var cities = ['New York', 'Washington DC', 'San Francisco', 'Dallas'];
+var notification_preference = [{
+	value: 1,
+	label: 'No notification'
+}, {
+	value: 2,
+	label: 'Friends only'
+}, {
+	value: 3,
+	label: 'All'
+}];
+
+
+// data that will be received from the server
+var _data = [];
+
+// we are generating data for this example.
+for(var i = 0; i < 30; i++)
+	_data.push({
+		id: i + 1,
+		name: 'Sample name ' + i,
+		city: cities[i%4],
+		notification_preference: i%3
+	});
+
+// define data model here
+var _attrs = [{
+  name: 'id',
+  list: false,
+  onForm: false,
+  description: ['id']
+},{
+  name: 'name',
+  list: true,
+  label: 'Name',
+  error: 'Name should have between 4 and 32 characters',
+  tab: 'General Info',
+  description: ['text', 'minlength=4', 'maxlength=32', 'required']
+},{
+  name: 'city',
+  list: true,
+  label: 'City',
+  tab: 'General Info',
+  options: cities,
+  description: ['select']
+},{
+  name: 'notification_preference',
+  list: true,
+  label: 'Notification Preference',
+  tab: 'Preferences',
+  options: notification_preference,
+  description: ['typeahead']
+}];
+
+(function(){
+  var app = angular.module('page', ['auto-crud']);
+  app.controller('CrudableController', function($http){
+    var ctrl = this;
+
+    var helper = globalUtils.helpers;
+
+    ctrl.data = _data;
+    ctrl.attrs = _attrs;
+
+    ctrl.paginateOptions = {itemsPerPage: 10};
+    ctrl.objectProperties = {
+      name: 'User',
+      baseUrl: 'users',
+      creates: {
+        url: 'new',
+        also: {
+          utf8: '✓',
+          //authenticity_token: $('meta[name=csrf-token]').attr('content')
+        }
+      },
+      edits: {
+        url: ':id',
+        method: 'patch',
+        also: {
+          utf8: '✓',
+          //authenticity_token: $('meta[name=csrf-token]').attr('content')
+        }
+      },
+      deletes: {
+        url: ':id',
+        method: 'delete',
+        also: {
+          _method: 'delete',
+          //authenticity_token: $('meta[name=csrf-token]').attr('content')
+        }
+      },
+      //uniqueUrl: 'unique'
+    };
+
+    return ctrl;
+  });
+  
+})();
+</script>
